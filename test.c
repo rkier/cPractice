@@ -9,6 +9,7 @@ next things to add
 -edit contacts
 -delete contacts
 -contact search by name or phone number
+-adding some more notes
 */
 
 typedef struct contact {
