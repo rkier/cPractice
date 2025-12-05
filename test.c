@@ -25,8 +25,13 @@ int loadContacts(contact_t contacts[]);
 
 int search(contact_t contacts[]);
 int findEmptyContactIndex(contact_t contacts[]);
-void deleteContact(contact_t contacts[], int i);
-void edit(contact_t contacts[], int i);
+void deleteContact(contact_t contacts[], int i, int *numOfContacts);
+void edit(contact_t contacts[], int i, int *numOfContacts);
+
+int findLowestIndex(contact_t contacts[], int start, int end);
+void swapContact(contact_t contacts[], int index1, int index2);
+void sortContacts(contact_t contacts[], int start, int end);
+
 
 int main(void)
 {    
@@ -66,18 +71,21 @@ int main(void)
                 }
                 else
                 {
-                    edit(contacts, searchResult);
+                    edit(contacts, searchResult, &numOfContacts);
+                    sortContacts(contacts, 0, numOfContacts);
+                    
                 }
                 
                 break;
             case 2: 
                 addContact(&numOfContacts, contacts);
+                sortContacts(contacts, 0, numOfContacts);
                 break;
             case 3:
                 search(contacts);
                 break;
             case 4:
-                deleteContact(contacts, 0);
+                deleteContact(contacts, 0, &numOfContacts);
                 break;
             default:
             break;
@@ -177,14 +185,15 @@ int findEmptyContactIndex(contact_t contacts[])
     }
 }
 
-void deleteContact(contact_t contacts[], int i)
+void deleteContact(contact_t contacts[], int i, int *numOfContacts)
 {
     contact_t empty = {'\0'};
     contacts[i]= empty;
     puts("contact deleted");
+    *numOfContacts = *numOfContacts - 1;
 }
 
-void edit(contact_t contacts[], int i)
+void edit(contact_t contacts[], int i,int *numOfContacts)
 {
   
     int userInput = 0;
@@ -213,12 +222,44 @@ void edit(contact_t contacts[], int i)
             scanf(" %s", contacts[i].phone);
             break;
         case 4:
-            deleteContact(contacts, i);
+            deleteContact(contacts, i, numOfContacts);
         
         default:
             break;
         }
     }
+}
+
+int findLowestIndex(contact_t contacts[], int start, int end)
+{
+    int lowest = start;
+    for (int i = start; i <end ; i++)
+    {
+           if (strncmp(contacts[i].name, contacts[lowest].name, 5) < 0)
+           {
+                lowest = i;
+           } 
+    }
+    return lowest;
+}
+
+void swapContact(contact_t contacts[], int index1, int index2)
+{
+contact_t temp = contacts[index1];
+contacts[index1] = contacts[index2];
+contacts[index2] = temp;
+}
+
+
+void sortContacts(contact_t contacts[], int start, int end)
+{
+    int lowest = 0;
+    for(int i = start; i < end; i++)
+    {
+        lowest = findLowestIndex(contacts, i, end);
+        swapContact(contacts, i, lowest);
+    }
+
 }
 
 
