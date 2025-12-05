@@ -13,31 +13,28 @@ next things to add
 */
 
 typedef struct contact {
-    char name[20];
-    char email[20];
+    char name[30];
+    char email[30];
     char phone[15];
-    int saved;
 } contact_t;
 
 void listContacts(int numOfContacts, contact_t contacts[]);
 void addContact(int *numOfContacts, contact_t contacts[]);
 void saveContacts(int numOfContacts, contact_t contacts[]);
-void loadContacts(contact_t contacts[]);
-int getNumOfContacts(contact_t contacts[]);
-void search(contact_t contacts[]);
+int loadContacts(contact_t contacts[]);
+
+int search(contact_t contacts[]);
 int findEmptyContactIndex(contact_t contacts[]);
-void deleteContact(contact_t contacts[]);
+void deleteContact(contact_t contacts[], int i);
+void edit(contact_t contacts[], int i);
 
 int main(void)
 {    
     contact_t contacts[50] = {};
-    loadContacts(contacts);
-    int numOfContacts = 0;
-    numOfContacts = getNumOfContacts(contacts);
-
-
     
-   
+    int numOfContacts = 0;
+    numOfContacts = loadContacts(contacts);
+    
     int userInput = 0;
 
     while(userInput != 5)
@@ -49,10 +46,29 @@ int main(void)
         puts("5. save and quit");
         
         scanf("%d", &userInput);
+
+        int listMenu = 0;
+        int searchResult = 0;
         switch(userInput)
         {
             case 1:
                 listContacts(numOfContacts, contacts);
+               
+                searchResult = search(contacts);
+                puts("1. menu");
+                puts("2. edit contact");
+
+                scanf("%d", &listMenu);
+
+                if (listMenu == 1)
+                {
+                    break;
+                }
+                else
+                {
+                    edit(contacts, searchResult);
+                }
+                
                 break;
             case 2: 
                 addContact(&numOfContacts, contacts);
@@ -61,7 +77,7 @@ int main(void)
                 search(contacts);
                 break;
             case 4:
-                deleteContact(contacts);
+                deleteContact(contacts, 0);
                 break;
             default:
             break;
@@ -76,13 +92,12 @@ void addContact(int *numOfContacts, contact_t contacts[])
 {
     int openSpot = findEmptyContactIndex(contacts);
     puts("enter a name");
-    scanf("%s", contacts[openSpot].name);
+    scanf("%30s", contacts[openSpot].name);
     puts("enter an email");
-    scanf("%s", contacts[openSpot].email);
+    scanf("%30s", contacts[openSpot].email);
     puts("enter a phone number");
-    scanf("%s", contacts[openSpot].phone);
+    scanf("%15s", contacts[openSpot].phone);
 
-    contacts[*numOfContacts].saved = 1;
     *numOfContacts = *numOfContacts +1;
 }
 
@@ -96,10 +111,8 @@ void listContacts(int numOfContacts, contact_t contacts[])
     {
         if(contacts[i].name[0] != '\0')
         {
-        printf("Name: %s\n", contacts[i].name);
-        printf("Email: %s\n", contacts[i].email);
-        printf("Phone: %s\n", contacts[i].phone);
-        printf("\n");
+        printf("%s\n", contacts[i].name);
+        
         }
     }
 
@@ -116,32 +129,21 @@ void saveContacts(int numOfContacts, contact_t contacts[])
     
 }
 
-void loadContacts(contact_t contacts[])
+int loadContacts(contact_t contacts[])
 {
-    
+    int count = 0;
     FILE *file = fopen("contacts.bin", "rb");
     if (file != NULL)
     {
-        fread(contacts, sizeof(contact_t), 50, file);
+        count = fread(contacts, sizeof(contact_t), 50, file);
         fclose(file); 
         
     }
+    return count;
 
 }
 
-int getNumOfContacts(contact_t contacts[])
-{
-   FILE *file = fopen("contacts.bin", "rb");
-    if (file != NULL)
-    {
-        int count = fread(contacts, sizeof(contact_t), 50, file);
-        fclose(file); 
-        return count;
-        
-    }
-}
-
-void search(contact_t contacts[])
+int search(contact_t contacts[])
 {
     puts("enter contact name");
     char buffer[20] = {'\0'};
@@ -160,7 +162,7 @@ void search(contact_t contacts[])
             printf("Email: %s\n", contacts[i].email);
             printf("Phone: %s\n", contacts[i].phone);
             printf("\n");
-            break;
+            return i;
         }
 
     }
@@ -175,15 +177,52 @@ int findEmptyContactIndex(contact_t contacts[])
     }
 }
 
-void deleteContact(contact_t contacts[])
+void deleteContact(contact_t contacts[], int i)
 {
-
-    puts("Enter an index to delete");
-    int index = 0;
-    scanf("%d", &index);
-
     contact_t empty = {'\0'};
-    contacts[index]= empty;
-    
-    
+    contacts[i]= empty;
+    puts("contact deleted");
 }
+
+void edit(contact_t contacts[], int i)
+{
+  
+    int userInput = 0;
+
+   
+    while (userInput != 5)
+    {
+        puts("1. edit name");
+        puts("2. edit email");
+        puts("3. edit phone number");
+        puts("4. delete contact");
+        puts("5. menu");
+        scanf("%d", &userInput);
+        switch (userInput)
+        {
+        case 1:
+            puts("enter new name");
+            scanf(" %s", contacts[i].name);
+            break;
+        case 2:
+            puts("enter new email");
+            scanf(" %s", contacts[i].email);
+            break;
+        case 3:
+            puts("enter new phone number");
+            scanf(" %s", contacts[i].phone);
+            break;
+        case 4:
+            deleteContact(contacts, i);
+        
+        default:
+            break;
+        }
+    }
+}
+
+
+
+
+
+
