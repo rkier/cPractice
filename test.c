@@ -24,6 +24,7 @@ void addContact(int *numOfContacts, contact_t contacts[]);
 void saveContacts(int numOfContacts, contact_t contacts[]);
 void loadContacts(contact_t contacts[]);
 int getNumOfContacts(contact_t contacts[]);
+void search(contact_t contacts[]);
 
 int main(void)
 {    
@@ -34,20 +35,16 @@ int main(void)
 
 
     
-  
-  
-//numOfContacts = 0;
-    
-    contact_t buffer[10]; 
    
     int userInput = 0;
-   
 
-    while(userInput != 3)
+    while(userInput != 4)
     {
         puts("1. list contacts");
         puts("2. add contact");
-        puts("3. save and quit");
+        puts("3. search contacts");
+        puts("4. save and quit");
+        
         scanf("%d", &userInput);
         switch(userInput)
         {
@@ -57,9 +54,11 @@ int main(void)
             case 2: 
                 addContact(&numOfContacts, contacts);
                 break;
+            case 3:
+                search(contacts);
+                break;
             default:
             break;
-
         }
     }
 
@@ -134,5 +133,30 @@ int getNumOfContacts(contact_t contacts[])
         fclose(file); 
         return count;
         
+    }
+}
+
+void search(contact_t contacts[])
+{
+    puts("enter contact name");
+    char buffer[20] = {'\0'};
+    
+    scanf(" %s", buffer);
+
+    
+    int searchLength = strlen(buffer);
+    
+    for(int i = 0; i < 50; i++)
+    {
+
+        if (strncmp(buffer, contacts[i].name, searchLength) == 0)
+        {
+            printf("Name: %s\n", contacts[i].name);  
+            printf("Email: %s\n", contacts[i].email);
+            printf("Phone: %s\n", contacts[i].phone);
+            printf("\n");
+            break;
+        }
+
     }
 }
