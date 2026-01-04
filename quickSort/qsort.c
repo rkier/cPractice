@@ -46,24 +46,30 @@ int partition(int arr[], int length) {
     
     printf("pivot: %d\n", pivot);
 
-    int r = length -1;
-    int l = 0;
+    int r = length ;
+    int l = -1;
     printArray(arr, length, l, r);
 
-    while(l < r) {
+    while(1) {
 
-        while(arr[l] <= pivot && l < length -1) l++;
-        while(arr[r] > pivot && r > 0) r--;
+        do {
+            l++;
+        } while(arr[l] < pivot);
+        do {
+             r--;
+        } while(arr[r] > pivot);
 
         if (l < r) {
             printArray(arr,length, l, r);
             printf("swapping %d and %d\n", arr[l], arr[r]);
             if (arr[l] != arr[r]) swap(arr, l, r);
             printArray(arr,length, l, r);
-            l++;
-            r--;
+            
         } else {
             printf("crossed l: %d r: %d\n", arr[l], arr[r]);
+            printArray(arr,length, l, r);
+
+            break;
         }
         printArray(arr, length, l, r);
     }
